@@ -198,7 +198,7 @@ def boundary_points(perm, return_lines=False):
         if len(polar_lis) == 0: continue
 
         order = slope_order(outer_polar[perm[line_i]][0])
-        polar_lis.sort(key=lambda x: order(x[0])) # slope order from 0,0 does not work
+        polar_lis.sort(key=lambda x: order(x[0]))
         inner_polar.append(polar_lis[0])
         inner_polar.append(polar_lis[-1])
     res.extend(list(set(inner_polar)))
