@@ -48,6 +48,11 @@ class Point(object):
     def dist_from(self):
         return lambda other: (self.x - other.x)**2 + (self.y - other.y)**2
     def slope_order(self):
+        def fun(P):
+            norm = P.theta - self.theta
+            if norm < 0:
+                return norm + 2*pi
+            return norm
         """
         Returns a key function to sort angles.
 
@@ -75,7 +80,7 @@ class Point(object):
         Currently the returned function will only work as expected if input is in
         the range [0, 2*pi[.
         """
-        return lambda P: P.theta if P.theta < self.theta else P.theta - 2*pi
+        return lambda P: P.theta - self.theta + 2*pi if P.theta < self.theta else P.theta - self.theta
 
 class OuterBoundaryPoint(object):
     def __init__(self, theta, r):
@@ -108,10 +113,13 @@ class UnicursalPolygon(object):
     def points(self):
         res = []
         for p in self.boundary_points:
-            if p.prev_inner is not None: res.append(p.prev_inner.cartesian())
-            if p.point is not None: res.append(p.point.cartesian())
-            if p.next_inner is not None: res.append(p.next_inner.cartesian())
-        return res
+            key = p.prev_inner.slope_order()
+            if key(p.next_inner) >= pi:
+                p.prev_inner, p.next_inner = p.next_inner, p.prev_inner
+            if p.prev_inner is not None: res.append(p.prev_inner)
+            if p.point is not None: res.append(p.point)
+            if p.next_inner is not None: res.append(p.next_inner)
+        return [p.cartesian() for p in res]
 
 
 
@@ -153,8 +161,12 @@ def cartesian_to_polar(x,y):
     Furthermore the cartesian origin (0,0) will return (0,0)
     even though (angle,0) for any angle would be equivalent.
     """
+    if x == 0 and y == 0:
+        return 0,0
     r = sqrt(x**2 + y**2)
-    theta = 0 if x == 0 else arctan(y/x)
+    theta = 1/2*pi if x == 0 else arctan(y/x)
+    if x == 0 and y < 0:
+        theta += pi
     if x < 0:
         theta += pi
     elif x > 0 and y < 0:
@@ -183,3 +195,5 @@ def two_points_to_line(p1,p2):
     c = -m*p1.x+p1.y
     return m,c
 
+def schlafi_symbol(n,m):
+    return [i*m % n for i in xrange(n)]
