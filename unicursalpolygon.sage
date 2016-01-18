@@ -6,7 +6,7 @@ class Line(object):
         self.m, self.c = two_points_to_line(p1.point, p2.point) # does not work atm
 
     def intersects(self, other):
-        #error handling
+        assert(self.m != other.m)
         if self.m == None:
             x = self.c
             y = other.m*x + other.c
@@ -24,12 +24,15 @@ class Line(object):
             res = self.intersects(line)
             if res is not None and res.r < 1:
                 intersections.append(res)
-        intersections.sort(key=self.start.point.dist_from())
+        intersections.sort(key=self.start.point.dist_from_squared())
         if len(intersections) > 0:
             self.start.next_inner = intersections[0]
             self.end.prev_inner = intersections[-1]
 
 class Point(object):
+    '''
+    wow
+    '''
     def __init__(self, theta=None, r=None, x=None, y=None):
         if theta is not None and r is not None:
             self.theta = theta
@@ -39,14 +42,34 @@ class Point(object):
             self.x = x
             self.y = y
             self.theta, self.r = cartesian_to_polar(x, y)
+        elif x is not None and r is not None:
+            self.x = x
+            self.r = r
+            self.y = sqrt(r**2 - x**2)
+            self.theta,_ = cartesian_to_polar(self.x,self.y)
+        elif y is not None and r is not None:
+            self.y = y
+            self.r = r
+            self.x = sqrt(r**2 - y**2)
+            self.theta,_ = cartesian_to_polar(self.x,self.y)
+        elif x is not None and theta is not None:
+            raise ValueError("x,theta not ready")
+            self.x = x
+            self.theta = theta
+            self.r = x / cos(theta) if cos(theta) != 0 else x
+            self.y = sqrt(r**2 - x**2)
+        elif y is not None and theta is not None:
+            raise ValueError("y,theta not ready")
         else:
-            print("Point arguments missing")
+            raise ValueError("Point arguments missing, provide at least two")
     def cartesian(self):
         return self.x, self.y
     def polar(self):
         return self.theta, self.r
     def dist_from(self):
         return lambda other: (self.x - other.x)**2 + (self.y - other.y)**2
+    def equals(self, other):
+        key =
     def slope_order(self):
         def fun(P):
             norm = P.theta - self.theta
@@ -161,14 +184,18 @@ def cartesian_to_polar(x,y):
     Furthermore the cartesian origin (0,0) will return (0,0)
     even though (angle,0) for any angle would be equivalent.
     """
+    # origin
     if x == 0 and y == 0:
         return 0,0
     r = sqrt(x**2 + y**2)
     theta = 1/2*pi if x == 0 else arctan(y/x)
+    # on y-axis and below x-axis
     if x == 0 and y < 0:
         theta += pi
+    #2nd or 3rd quadrant
     if x < 0:
         theta += pi
+    #4th quadrant
     elif x > 0 and y < 0:
         theta += 2*pi
     return N(theta), N(r)
