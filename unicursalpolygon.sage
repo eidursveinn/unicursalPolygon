@@ -1,3 +1,4 @@
+import copy
 class Line(object):
     def __init__(self, p1, p2):
         #self.intersections = []
@@ -66,10 +67,12 @@ class Point(object):
         return self.x, self.y
     def polar(self):
         return self.theta, self.r
-    def dist_from(self):
+    def dist_from_squared(self):
         return lambda other: (self.x - other.x)**2 + (self.y - other.y)**2
     def equals(self, other):
-        key =
+        dist_from_squared = self.dist_from_squared()
+        # we choose 1e-6 for the time being since it should work for at least the first few stars we get
+        return dist_from_squared(other) < 1e-2
     def slope_order(self):
         def fun(P):
             norm = P.theta - self.theta
@@ -144,6 +147,36 @@ class UnicursalPolygon(object):
             if p.next_inner is not None: res.append(p.next_inner)
         return [p.cartesian() for p in res]
 
+    def is_star(self):
+        # call the function to order the points and fix next/prev
+        self.points()
+        #boundary_points = copy.deepcopy(self.boundary_points)
+        for i in xrange(self.n-1):
+            if not self.boundary_points[i].next_inner.equals(self.boundary_points[i+1].prev_inner):
+                print("error in point nr:",i, self.boundary_points[i].next_inner.cartesian(), self.boundary_points[i+1].prev_inner.cartesian())
+                return False
+        # special case for last and first point
+        if not self.boundary_points[self.n-1].next_inner.equals(self.boundary_points[0].prev_inner):
+            return False
+        return True
+
+def generate_stars(n):
+    stars = []
+    errors = []
+    polygons = []
+    for c in CyclicPermutations(range(n)):
+        try:
+            if UnicursalPolygon(c).is_star():
+                stars.append(c)
+            else:
+                polygons.append(c)
+        except:
+            errors.append(c)
+    return stars,polygons#,errors
+            
+def draw_stars(lis):
+    for star in lis:
+        polygon(UnicursalPolygon(star).points()).show()
 
 
 def polar_to_cartesian(theta,r):
