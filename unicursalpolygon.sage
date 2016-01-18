@@ -1,10 +1,16 @@
 import copy
+# temporary wrapper allowing for N(None) to be None instead of zero
+def N(number):
+    if number is None:
+        return None
+    return numerical_approx(number)
+
 class Line(object):
     def __init__(self, p1, p2):
         #self.intersections = []
         self.start = p1
         self.end = p2
-        self.m, self.c = two_points_to_line(p1.point, p2.point) # does not work atm
+        self.m, self.c = two_points_to_line(p1.point, p2.point)
 
     def intersects(self, other):
         assert(self.m != other.m)
@@ -34,15 +40,17 @@ class Point(object):
     '''
     wow
     '''
-    def __init__(self, theta=None, r=None, x=None, y=None):
+    def __init__(self, theta=None, r=None, x=None, y=None, accurate=False):
+        # is ok.
         if theta is not None and r is not None:
             self.theta = theta
             self.r = r
-            self.x, self.y = polar_to_cartesian(theta, r)
+            self.x, self.y = polar_to_cartesian(theta, r, accurate=accurate)
         elif x is not None and y is not None:
             self.x = x
             self.y = y
-            self.theta, self.r = cartesian_to_polar(x, y)
+            self.theta, self.r = cartesian_to_polar(x, y, accurate=accurate)
+        # these are fucked
         elif x is not None and r is not None:
             self.x = x
             self.r = r
@@ -53,6 +61,7 @@ class Point(object):
             self.r = r
             self.x = sqrt(r**2 - y**2)
             self.theta,_ = cartesian_to_polar(self.x,self.y)
+        # these are very fucked
         elif x is not None and theta is not None:
             raise ValueError("x,theta not ready")
             self.x = x
@@ -110,7 +119,7 @@ class Point(object):
 
 class OuterBoundaryPoint(object):
     def __init__(self, theta, r):
-        self.point = Point(theta=theta, r=r)
+        self.point = Point(theta=theta, r=r, accurate=True)
         self.next_inner = None
         self.prev_inner = None
 
@@ -120,6 +129,14 @@ class UnicursalPolygon(object):
         self.n = len(perm)
         self.boundary_points = [OuterBoundaryPoint(i * 2*pi/self.n, 1) for i in xrange(self.n)]
         self.lines = [Line(self.boundary_points[perm[i]], self.boundary_points[perm[(i+1)%self.n]]) for i in xrange(self.n)]
+        for point in self.boundary_points:
+            point.point.x = N(point.point.x)
+            point.point.y = N(point.point.y)
+            point.point.theta = N(point.point.theta)
+            point.point.r = N(point.point.r)
+        for line in self.lines:
+            line.m = N(line.m)
+            line.c = N(line.c)
         self.__calculate_boundary_points()
         self.star = None
 
@@ -179,7 +196,7 @@ def draw_stars(lis):
         polygon(UnicursalPolygon(star).points()).show()
 
 
-def polar_to_cartesian(theta,r):
+def polar_to_cartesian(theta,r,accurate=False):
     """
     Converts polar coordinates to cartesian coordinates.
 
@@ -193,11 +210,15 @@ def polar_to_cartesian(theta,r):
 
     Cartesian coordinates (x,y) equivalent to the given polar coordinates
     """
-    x = N(r*cos(theta))
-    y = N(r*sin(theta))
+    if accurate:
+        x = r*cos(theta)
+        y = r*sin(theta)
+    else:
+        x = N(r*cos(theta))
+        y = N(r*sin(theta))
     return x,y
 
-def cartesian_to_polar(x,y):
+def cartesian_to_polar(x,y, accurate=False):
     """
     Converts cartesian coordinates to polar coordinates.
 
@@ -231,6 +252,8 @@ def cartesian_to_polar(x,y):
     #4th quadrant
     elif x > 0 and y < 0:
         theta += 2*pi
+    if accurate:
+        return theta,r
     return N(theta), N(r)
 
 def two_points_to_line(p1,p2):
