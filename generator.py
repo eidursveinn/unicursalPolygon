@@ -12,18 +12,22 @@ class CyclicPermutationsHalfAvoidingNeighbours(object):
     def __iter__(self):
         if self.n < 5:
             return
+        def safe_remove(lis,val):
+            try:
+                lis.remove(val)
+            except ValueError:
+                pass
+
         def calculate_iter(ind, perm):
-            res = list(range(0,self.n))
-            for i,val in zip(range(0,ind),perm):
+            res = list(range(1,self.n))
+            for val in perm[1:ind]:
                 res.remove(val)
-            try:
-                res.remove((perm[ind-1]-1) % self.n)
-            except:
-                pass
-            try:
-                res.remove((perm[ind-1]+1) % self.n)
-            except: 
-                pass
+            safe_remove(res,(perm[ind-1]-1)%self.n)
+            safe_remove(res,(perm[ind-1]+1)%self.n)
+            if ind + 1 == self.n:
+                safe_remove(res, 1)
+                safe_remove(res, self.n - 1)
+
             return iter(res)
         perm = [0] * self.n
         iter_lis = [None] * self.n
@@ -35,11 +39,12 @@ class CyclicPermutationsHalfAvoidingNeighbours(object):
                 iter_lis[ind] = calculate_iter(ind, perm)
             else:
                 try:
-                    tmp = iter_lis[ind].__next__()
+                    #tmp = iter_lis[ind].__next__() # python3
+                    tmp = iter_lis[ind].next() # python2/sage
                     perm[ind] = tmp
                     ind += 1
                     if ind == self.n:
-                        yield perm
+                        yield list(perm)
                         ind -= 1
                 except StopIteration:
                     iter_lis[ind] = None

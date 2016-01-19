@@ -1,4 +1,6 @@
-import copy
+from generator import CyclicPermutationsHalfAvoidingNeighbours
+import sys
+
 # temporary wrapper allowing for N(None) to be None instead of zero
 def N(number):
     if number is None:
@@ -13,7 +15,8 @@ class Line(object):
         self.m, self.c = two_points_to_line(p1.point, p2.point)
 
     def intersects(self, other):
-        assert(self.m != other.m)
+        if self.m == other.m:
+            return None
         if self.m == None:
             x = self.c
             y = other.m*x + other.c
@@ -170,7 +173,7 @@ class UnicursalPolygon(object):
         #boundary_points = copy.deepcopy(self.boundary_points)
         for i in xrange(self.n-1):
             if not self.boundary_points[i].next_inner.equals(self.boundary_points[i+1].prev_inner):
-                print("error in point nr:",i, self.boundary_points[i].next_inner.cartesian(), self.boundary_points[i+1].prev_inner.cartesian())
+                #print("error in point nr:",i, self.boundary_points[i].next_inner.cartesian(), self.boundary_points[i+1].prev_inner.cartesian())
                 return False
         # special case for last and first point
         if not self.boundary_points[self.n-1].next_inner.equals(self.boundary_points[0].prev_inner):
@@ -181,15 +184,16 @@ def generate_stars(n):
     stars = []
     errors = []
     polygons = []
-    for c in CyclicPermutations(range(n)):
+    for c in CyclicPermutationsHalfAvoidingNeighbours(n):
         try:
             if UnicursalPolygon(c).is_star():
                 stars.append(c)
             else:
                 polygons.append(c)
         except:
+            print "Unexpected error:", sys.exc_info()[0:2]
             errors.append(c)
-    return stars,polygons#,errors
+    return stars,polygons,errors
             
 def draw_stars(lis):
     for star in lis:
