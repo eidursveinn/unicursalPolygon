@@ -39,8 +39,8 @@ class CyclicPermutationsHalfAvoidingNeighbours(object):
                 iter_lis[ind] = calculate_iter(ind, perm)
             else:
                 try:
-                    #tmp = iter_lis[ind].__next__() # python3
-                    tmp = iter_lis[ind].next() # python2/sage
+                    tmp = iter_lis[ind].__next__() # python3
+                    #tmp = iter_lis[ind].next() # python2/sage
                     perm[ind] = tmp
                     ind += 1
                     if ind == self.n:
