@@ -248,7 +248,7 @@ def cartesian_to_polar(x,y, accurate=False):
     if x == 0 and y == 0:
         return 0,0
     r = sqrt(x**2 + y**2)
-    theta = 1/2*pi if x == 0 else atan(y/x)
+    theta = 1/2*pi if x == 0 else atan2(y,x)
     # on y-axis and below x-axis
     if x == 0 and y < 0:
         theta += pi
