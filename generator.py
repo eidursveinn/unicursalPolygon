@@ -2,9 +2,10 @@
 import sys
 
 class CyclicPermutationsHalfAvoidingNeighbours(object):
-    def __init__(self, n):
+    def __init__(self, n, optimization=True):
         assert(0 <= n)
         self.n = n
+        self.optimization = optimization
     def __repr__(self):
         return "Instance of {} of length {}".format(self.__class__.__name__, self.n)
     def __str__(self):
@@ -25,14 +26,16 @@ class CyclicPermutationsHalfAvoidingNeighbours(object):
             safe_remove(res,(perm[ind-1]-1)%self.n)
             safe_remove(res,(perm[ind-1]+1)%self.n)
             if ind + 1 == self.n:
-                safe_remove(res, 1)
-                safe_remove(res, self.n - 1)
+                safe_remove(res, (perm[0] + 1) % self.n)
+                safe_remove(res, (perm[0] - 1) % self.n)
 
             return iter(res)
         perm = [0] * self.n
         iter_lis = [None] * self.n
         iter_lis[0] = iter([0])
-        iter_lis[1] = iter(list(range(2, self.n//2 +1)))
+        if self.optimization:
+            iter_lis[1] = iter(list(range(2, self.n//2 +1)))
+
         ind = 1
         while ind != 0:
             if iter_lis[ind] is None:

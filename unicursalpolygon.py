@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from generator import CyclicPermutationsHalfAvoidingNeighbours
-import sys
 from sympy import *
+import sys
+import os.path
 
 # temporary wrapper allowing for N(None) to be None instead of zero
 def N(number):
@@ -182,18 +183,18 @@ class UnicursalPolygon(object):
             return False
         return True
 
-def generate_stars(n):
+def generate_stars(n, optimization=True):
     stars = []
     errors = []
     polygons = []
-    for c in CyclicPermutationsHalfAvoidingNeighbours(n):
+    for c in CyclicPermutationsHalfAvoidingNeighbours(n, optimization=optimization):
         try:
             if UnicursalPolygon(c).is_star():
                 stars.append(c)
             else:
                 polygons.append(c)
         except:
-            print("Unexpected error:", sys.exc_info()[0:2])
+            print("Unexpected error:", sys.exc_info())
             errors.append(c)
     return stars,polygons,errors
             
@@ -251,7 +252,7 @@ def cartesian_to_polar(x,y, accurate=False):
     theta = atan2(y,x)
     while theta < 0:
         theta += 2*pi
-    return theta, r if accurate else N(theta), N(r)
+    return (theta, r) if accurate else (N(theta), N(r))
 
 def two_points_to_line(p1,p2):
     """
@@ -278,8 +279,55 @@ def two_points_to_line(p1,p2):
 def schlafi_symbol(n,m):
     return [i*m % n for i in range(n)]
 
+def to_file(arg,n, stdout=True):
+    import csv
+    filenames = ["stars","other","error"]
+    for fname, perm_lis in zip(filenames, arg):
+        if stdout:
+            print(fname, len(perm_lis))
+            f = sys.stdout
+        else:
+            f = open("{fname}_{num:02d}.csv".format(num=n,fname=fname), "w")
+        writer = csv.writer(f)
+        if len(perm_lis):
+            writer.writerows(perm_lis)
+        if not stdout:
+            f.close()
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser('')
+    parser.add_argument("-o", "--output-dir", help="When provided info will be written to file instead of stdout")
+    parser.add_argument("-q", "--quiet", help="Suppress all output", action="store_const", const=True)
+    parser.add_argument("-v", "--verbose", help="Place holder for debugging information", action="count")
+    parser.add_argument("-p", "--progress_bar", help="!", action="store_const", const=True)
+    parser.add_argument("permutation_length", help="Length of permutations to check")
+    parser.add_argument("-0", "--no-optimization", help="Turn off generator halving", action="store_const", const=True)
+
+    args = parser.parse_args()
+    exit = False
+
+    if args.quiet:
+        sys.stdout = open("/dev/null", "a")
+        sys.stderr = open("/dev/null", "a")
+
+    if args.output_dir is not None:
+        if os.path.isdir(args.output_dir):
+            os.chdir(args.output_dir)
+            to_screen = False
+        else:
+            print("Directory '{}' does not exist".format(args.output_dir))
+            exit = True
+    else:
+        to_screen = True
+
+    if not exit:
+        n = int(args.permutation_length)
+        results = generate_stars(n, optimization=not args.no_optimization)
+        to_file(results, n, stdout=to_screen)
+    else:
+        parser.print_help()
+        sys.exit(0)
 
 if __name__ == "__main__":
-    import sys
-    a = int(sys.argv[1])
-    print(generate_stars(a))
+    main()
