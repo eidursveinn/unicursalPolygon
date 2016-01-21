@@ -189,6 +189,8 @@ def generate_stars(n, optimization=True, progress_bar=False):
     polygons = []
     gen = CyclicPermutationsHalfAvoidingNeighbours(n, optimization=optimization)
     if progress_bar:
+        import time
+        start_time = time.time()
         print("Calculating list for progress bar", end='\r')
         gen = list(gen)
         total = len(gen)
@@ -196,9 +198,12 @@ def generate_stars(n, optimization=True, progress_bar=False):
         if progress_bar:
             ratio = i/total
             percent = 100.0 * ratio
-            num = int(ratio*60)
-            bar = '[' + '#'*num + ' '*(60-num) + ']'
-            print("  {:04.1f}% {} {}/{}".format(percent, bar, i, total), end='\r')
+            if i % 10 == 0:
+                delta = time.time() - start_time
+                time_left = 0 if not ratio else (1-ratio)/ratio * delta
+                num = int(ratio*60)
+                bar = '[' + '#'*num + ' '*(60-num) + ']'
+            print("  {:04.1f}% {} {}/{} in {:0.2f}s estimated {:0.2f} left".format(percent, bar, i, total, delta, time_left), end='\r')
         try:
             if UnicursalPolygon(c).is_star():
                 stars.append(c)
