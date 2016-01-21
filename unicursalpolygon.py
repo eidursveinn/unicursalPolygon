@@ -248,19 +248,10 @@ def cartesian_to_polar(x,y, accurate=False):
     if x == 0 and y == 0:
         return 0,0
     r = sqrt(x**2 + y**2)
-    theta = 1/2*pi if x == 0 else atan2(y,x)
-    # on y-axis and below x-axis
-    if x == 0 and y < 0:
-        theta += pi
-    #2nd or 3rd quadrant
-    if x < 0:
-        theta += pi
-    #4th quadrant
-    elif x > 0 and y < 0:
+    theta = atan2(y,x)
+    while theta < 0:
         theta += 2*pi
-    if accurate:
-        return theta,r
-    return N(theta), N(r)
+    return theta, r if accurate else N(theta), N(r)
 
 def two_points_to_line(p1,p2):
     """
