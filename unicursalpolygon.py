@@ -183,16 +183,29 @@ class UnicursalPolygon(object):
             return False
         return True
 
-def generate_stars(n, optimization=True):
+def generate_stars(n, optimization=True, progress_bar=False):
     stars = []
     errors = []
     polygons = []
-    for c in CyclicPermutationsHalfAvoidingNeighbours(n, optimization=optimization):
+    gen = CyclicPermutationsHalfAvoidingNeighbours(n, optimization=optimization)
+    if progress_bar:
+        print("Calculating list for progress bar", end='\r')
+        gen = list(gen)
+        total = len(gen)
+    for i,c in enumerate(gen):
+        if progress_bar:
+            ratio = i/total
+            percent = 100.0 * ratio
+            num = int(ratio*60)
+            bar = '[' + '#'*num + ' '*(60-num) + ']'
+            print("  {:04.1f}% {} {}/{}".format(percent, bar, i, total), end='\r')
         try:
             if UnicursalPolygon(c).is_star():
                 stars.append(c)
             else:
                 polygons.append(c)
+        except KeyboardInterrupt:
+            raise
         except:
             print("Unexpected error:", sys.exc_info())
             errors.append(c)
@@ -279,6 +292,12 @@ def two_points_to_line(p1,p2):
 def schlafi_symbol(n,m):
     return [i*m % n for i in range(n)]
 
+def inverse_0(perm):
+    tmp = [ (elem,i) for i,elem in enumerate(perm)]
+    tmp.sort()
+    return [b for a,b in tmp]
+
+
 def to_file(arg,n, stdout=True):
     import csv
     filenames = ["stars","other","error"]
@@ -300,7 +319,7 @@ def main():
     parser.add_argument("-o", "--output-dir", help="When provided info will be written to file instead of stdout")
     parser.add_argument("-q", "--quiet", help="Suppress all output", action="store_const", const=True)
     parser.add_argument("-v", "--verbose", help="Place holder for debugging information", action="count")
-    parser.add_argument("-p", "--progress_bar", help="!", action="store_const", const=True)
+    parser.add_argument("-p", "--progress-bar", help="!", action="store_const", const=True)
     parser.add_argument("permutation_length", help="Length of permutations to check")
     parser.add_argument("-0", "--no-optimization", help="Turn off generator halving", action="store_const", const=True)
 
@@ -323,7 +342,7 @@ def main():
 
     if not exit:
         n = int(args.permutation_length)
-        results = generate_stars(n, optimization=not args.no_optimization)
+        results = generate_stars(n, optimization=not args.no_optimization, progress_bar=args.progress_bar)
         to_file(results, n, stdout=to_screen)
     else:
         parser.print_help()
