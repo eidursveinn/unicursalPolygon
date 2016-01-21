@@ -186,7 +186,25 @@ class UnicursalPolygon(object):
     def draw_star(self):
         pts = self.points()
         polygon(pts)
-
+def mp_work(c):
+    if UnicursalPolygon(c).is_star():
+        return c, True
+    else:
+        return c, False
+def generate_stars_multiprocessing(n, optimization=True, progress_bar=False):
+    import multiprocessing as mp
+    gen = list(CyclicPermutationsHalfAvoidingNeighbours(n, optimization=optimization))
+    pool = mp.Pool()
+    tmp = pool.map(mp_work, gen)
+    stars = []
+    other = []
+    error = []
+    for a,b in tmp:
+        if b:
+            stars.append(a)
+        else:
+            other.append(a)
+    return stars, other, error
 def generate_stars(n, optimization=True, progress_bar=False):
     stars = []
     errors = []
@@ -331,6 +349,7 @@ def main():
     parser.add_argument("-q", "--quiet", help="Suppress all output", action="store_const", const=True)
     parser.add_argument("-v", "--verbose", help="Place holder for debugging information", action="count")
     parser.add_argument("-p", "--progress-bar", help="!", action="store_const", const=True)
+    parser.add_argument("-m", "--multiprocessing", help="After a list of permutations has been generated all cores are utilized", action="store_const", const=True)
     parser.add_argument("permutation_length", help="Length of permutations to check")
     parser.add_argument("-0", "--no-optimization", help="Turn off generator halving", action="store_const", const=True)
 
@@ -351,9 +370,14 @@ def main():
     else:
         to_screen = True
 
+    if args.multiprocessing:
+        star_gen = generate_stars_multiprocessing
+    else:
+        star_gen = generate_stars
+
     if not exit:
         n = int(args.permutation_length)
-        results = generate_stars(n, optimization=not args.no_optimization, progress_bar=args.progress_bar)
+        results = star_gen(n, optimization=not args.no_optimization, progress_bar=args.progress_bar)
         to_file(results, n, stdout=to_screen)
     else:
         parser.print_help()
