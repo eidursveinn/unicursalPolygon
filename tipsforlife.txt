@@ -1,0 +1,18 @@
+TODO:
+bisc
+check the inverse symmetry
+reverse
+complement
+skoðu unique stjörnur
+oeis
+    -nothing so far
+bæta við til að sýna progress
+    - just count shit
+add functionality for seeing pictures of lines
+    - um helgina
+
+
+
+DONE:
+move to python
+skrifa í skrá
