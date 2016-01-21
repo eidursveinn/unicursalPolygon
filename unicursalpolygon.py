@@ -183,6 +183,10 @@ class UnicursalPolygon(object):
             return False
         return True
 
+    def draw_star(self):
+        pts = self.points()
+        polygon(pts)
+
 def generate_stars(n, optimization=True):
     stars = []
     errors = []
