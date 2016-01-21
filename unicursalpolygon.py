@@ -198,11 +198,11 @@ def generate_stars(n, optimization=True, progress_bar=False):
         print("Calculating list for progress bar", end='\r')
         gen = list(gen)
         total = len(gen)
-    for i,c in enumerate(gen):
+    for i,c in enumerate(gen, start=1):
         if progress_bar:
             ratio = i/total
             percent = 100.0 * ratio
-            if i % 10 == 0:
+            if i % 10 == 1:
                 delta = time.time() - start_time
                 time_left = 0 if not ratio else (1-ratio)/ratio * delta
                 num = int(ratio*60)
@@ -218,6 +218,8 @@ def generate_stars(n, optimization=True, progress_bar=False):
         except:
             print("Unexpected error:", sys.exc_info())
             errors.append(c)
+    if progress_bar:
+        print()
     return stars,polygons,errors
             
 def draw_stars(lis):
