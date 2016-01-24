@@ -146,6 +146,7 @@ class UnicursalPolygon(object):
             line.c = N(line.c)
         self.__calculate_boundary_points()
         self.star = None
+        self.skip_list = [(perm[(i+1) % self.n]-perm[i]) % self.n for i in range(self.n)]
 
     def __calculate_boundary_points(self):
         for line_i in range(self.n):
@@ -184,7 +185,7 @@ class UnicursalPolygon(object):
             return False
         return True
 
-    def draw_star(self,save=False,arrows=True):
+    def draw(self,save=False,arrows=True):
         import matplotlib.pyplot as pl
         x = []
         y = []
@@ -203,7 +204,7 @@ class UnicursalPolygon(object):
         else:
             pl.plot(x,y)
         pl.axis([-1,1,-1,1])
-        pl.title(str(self.perm))
+        pl.title(str(self.perm) + '\n' + str(self.skip_list))
         if save:
             pl.savefig(str(self.perm)+".svg")
         else:
