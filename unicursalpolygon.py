@@ -183,7 +183,7 @@ class UnicursalPolygon(object):
             return False
         return True
 
-    def draw_star(self,save=False):
+    def draw_star(self,save=False,arrows=True):
         import matplotlib.pyplot as pl
         x = []
         y = []
@@ -193,9 +193,18 @@ class UnicursalPolygon(object):
             y.append(y1)
         x.append(x[0])
         y.append(y[0])
-        pl.plot(x,y)
+        # different colors, maybe implement this later
+        #for i in range(len(x)-1):
+        #    pl.plot([x[i],x[i+1]],[y[i],y[i+1]],color=(i/len(x),0,1))
+        if arrows:
+            for i in range(len(x)-1):
+                pl.quiver(x[i], y[i], x[i+1]-x[i], y[i+1]-y[i], scale_units='xy', angles='xy', scale=1,width=0.0012,headwidth=8,headlength=15)
+        else:
+            pl.plot(x,y)
+        pl.axis([-1,1,-1,1])
+        pl.title(str(self.perm))
         if save:
-            pl.savefig(str(self.perm)+".png")
+            pl.savefig(str(self.perm)+".svg")
         else:
             pl.show()
 
