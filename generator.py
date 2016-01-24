@@ -1,5 +1,38 @@
 #!/usr/bin/env python3
 import sys
+def arst(perm,i):
+    offset = perm[i]
+    n = len(perm)
+    res = [(perm[(i+j) % n] - offset) % n  for j in range(n)]
+    if res[1] > n//2:
+        res = [-i % n for i in res]
+    return res
+class UniqueCyclicPermutation(object):
+    def __init__(self, p):
+        self.perm = p
+        self.n = len(p)
+        self.alike = [ arst(self.perm,i) for i in range(self.n) ]
+        self.alike2 = [ arst(self.perm[::-1],i) for i in range(self.n) ]
+    def equals(self,p):
+        return p in self.alike or p in self.alike2
+
+class UniqueCyclicPermutationsHalfAvoidingNeighbours(object):
+    def __init__(self, n):
+        assert(0 <= n)
+        self.n = n
+        self.gen = CyclicPermutationsHalfAvoidingNeighbours(self.n)
+    def __iter__(self):
+        results = []
+        for perm in self.gen:
+            for r in results:
+                if r.equals(perm):
+                    break
+            else:
+                results.append(UniqueCyclicPermutation(perm))
+        for r in results:
+            yield list(r.perm)
+        return
+
 
 class CyclicPermutationsHalfAvoidingNeighbours(object):
     def __init__(self, n, optimization=True):
