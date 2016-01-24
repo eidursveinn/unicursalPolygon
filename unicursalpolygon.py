@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from generator import CyclicPermutationsHalfAvoidingNeighbours
+from generator import UniqueCyclicPermutationsHalfAvoidingNeighbours
 from sympy import *
 import sys
 import os.path
@@ -232,7 +233,8 @@ def generate_stars(n, optimization=True, progress_bar=False):
     stars = []
     errors = []
     polygons = []
-    gen = CyclicPermutationsHalfAvoidingNeighbours(n, optimization=optimization)
+    #gen = CyclicPermutationsHalfAvoidingNeighbours(n, optimization=optimization)
+    gen = UniqueCyclicPermutationsHalfAvoidingNeighbours(n)
     if progress_bar:
         import time
         start_time = time.time()
@@ -265,7 +267,7 @@ def generate_stars(n, optimization=True, progress_bar=False):
             
 def draw_stars(lis):
     for star in lis:
-        polygon(UnicursalPolygon(star).points()).show()
+        UnicursalPolygon(star).draw_star()
 
 
 def polar_to_cartesian(theta,r,accurate=False):
