@@ -88,7 +88,7 @@ class Point(object):
     def equals(self, other):
         dist_from_squared = self.dist_from_squared()
         # we choose 1e-6 for the time being since it should work for at least the first few stars we get
-        return dist_from_squared(other) < 1e-2
+        return dist_from_squared(other) < 1e-12
     def slope_order(self):
         def fun(P):
             norm = P.theta - self.theta
