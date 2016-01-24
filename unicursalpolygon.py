@@ -184,9 +184,23 @@ class UnicursalPolygon(object):
             return False
         return True
 
-    def draw_star(self):
-        pts = self.points()
-        polygon(pts)
+    def draw_star(self,save=False):
+        import matplotlib.pyplot as pl
+        x = []
+        y = []
+        for num in self.perm:
+            x1,y1 = self.boundary_points[num].point.cartesian()
+            x.append(x1)
+            y.append(y1)
+        x.append(x[0])
+        y.append(y[0])
+        pl.plot(x,y)
+        if save:
+            pl.savefig(str(self.perm)+".png")
+        else:
+            pl.show()
+
+
 def mp_work(c):
     if UnicursalPolygon(c).is_star():
         return c, True
