@@ -268,7 +268,7 @@ def generate_stars(n, optimization=True, progress_bar=False):
             
 def draw_stars(lis):
     for star in lis:
-        UnicursalPolygon(star).draw_star()
+        UnicursalPolygon(star).draw()
 
 
 def polar_to_cartesian(theta,r,accurate=False):
