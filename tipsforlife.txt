@@ -18,6 +18,10 @@ nr of non-iso stars
 
 relation between non star and star through inversions
 
+The shortest distance between two points on a line in a star. 
+Pick a point, draw two lines from that point to the lines furthest away from that point. Also draw a line between the two points closest to that point. The intersections between these three lines will make two points. We calculate the distance between those.
+For stars with an even number of n points: distance = tan(pi/2n) * sin(pi/n) * 2 * sin(pi/n)
+For stars with an odd number of n points: distance = tan(pi/n) * 4 * sin(pi/n) * sin(pi/n)
 
 
 DONE:
