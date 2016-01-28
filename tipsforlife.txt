@@ -7,6 +7,10 @@ skoðu unique stjörnur
 oeis
     -nothing so far
 
+look at knots
+
+linear programming to look at embedding
+
 add step counter to uniclass with minuses
 
 question: when star?
@@ -16,7 +20,7 @@ non-symmetric
 nr of non-iso stars
 
 
-relation between non star and star through inversions
+relation between non star and star through inverses
 
 The shortest distance between two points on a line in a star. 
 Pick a point, draw two lines from that point to the lines furthest away from that point. Also draw a line between the two points closest to that point. The intersections between these three lines will make two points. We calculate the distance between those.
@@ -29,6 +33,7 @@ move to python
 skrifa í skrá
 bæta við til að sýna progress
 add functionality for seeing pictures of lines
+minimum distance between two poitns for innacuracy
 
 
 
