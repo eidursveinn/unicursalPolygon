@@ -131,8 +131,15 @@ class OuterBoundaryPoint(object):
         self.prev_inner = None
 
 class UnicursalPolygon(object):
-    def __init__(self, perm):
-        self.perm = perm
+    def __init__(self, perm, jumps=False):
+        # perm and jumps
+        if jumps:
+            jump_list = [0]
+            for jump in perm[:-1]:
+                jump_list.append((jump_list[-1] + jump) % len(perm))
+            self.perm = jump_list
+        else:
+            self.perm = perm
         self.n = len(perm)
         self.boundary_points = [OuterBoundaryPoint(i * 2*pi/self.n, 1) for i in range(self.n)]
         self.lines = [Line(self.boundary_points[perm[i]], self.boundary_points[perm[(i+1)%self.n]]) for i in range(self.n)]
@@ -146,7 +153,7 @@ class UnicursalPolygon(object):
             line.c = N(line.c)
         self.__calculate_boundary_points()
         self.star = None
-        self.skip_list = [(perm[(i+1) % self.n]-perm[i]) % self.n for i in range(self.n)]
+        self.skip_list = [(self.perm[(i+1) % self.n]-self.perm[i]) % self.n for i in range(self.n)]
 
     def __calculate_boundary_points(self):
         for line_i in range(self.n):
@@ -209,6 +216,7 @@ class UnicursalPolygon(object):
             pl.savefig(str(self.perm)+".svg")
         else:
             pl.show()
+        pl.close()
 
 
 def mp_work(c):
