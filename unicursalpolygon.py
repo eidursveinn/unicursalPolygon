@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from generator import CyclicPermutationsHalfAvoidingNeighbours
 from generator import UniqueCyclicPermutationsHalfAvoidingNeighbours
+from partition_generator import PartitionsOfMultiplesOfLength
 from sympy import *
 import sys
 import os.path
@@ -49,6 +50,7 @@ class Point(object):
     '''
     def __init__(self, theta=None, r=None, x=None, y=None, accurate=False):
         # is ok.
+        self.min_dist = lambda n : float(2 * sin(pi/n) * sin(pi/n) * tan(pi/(2*n)))
         if theta is not None and r is not None:
             self.theta = theta
             self.r = r
@@ -85,10 +87,13 @@ class Point(object):
         return self.theta, self.r
     def dist_from_squared(self):
         return lambda other: (self.x - other.x)**2 + (self.y - other.y)**2
-    def equals(self, other):
+    def equals(self, other, n=None):
         dist_from_squared = self.dist_from_squared()
         # we choose 1e-6 for the time being since it should work for at least the first few stars we get
-        return dist_from_squared(other) < 1e-12
+        if n is not None:
+            return dist_from_squared(other) < self.min_dist(n) ** 2
+        else:
+            return dist_from_squared(other) < 1e-12
     def slope_order(self):
         def fun(P):
             norm = P.theta - self.theta
@@ -184,11 +189,11 @@ class UnicursalPolygon(object):
         self.points()
         #boundary_points = copy.deepcopy(self.boundary_points)
         for i in range(self.n-1):
-            if not self.boundary_points[i].next_inner.equals(self.boundary_points[i+1].prev_inner):
+            if not self.boundary_points[i].next_inner.equals(self.boundary_points[i+1].prev_inner, n=self.n):
                 #print("error in point nr:",i, self.boundary_points[i].next_inner.cartesian(), self.boundary_points[i+1].prev_inner.cartesian())
                 return False
         # special case for last and first point
-        if not self.boundary_points[self.n-1].next_inner.equals(self.boundary_points[0].prev_inner):
+        if not self.boundary_points[self.n-1].next_inner.equals(self.boundary_points[0].prev_inner, n=self.n):
             return False
         return True
 
@@ -238,12 +243,14 @@ def generate_stars_multiprocessing(n, optimization=True, progress_bar=False):
         else:
             other.append(a)
     return stars, other, error
-def generate_stars(n, optimization=True, progress_bar=False):
+def generate_stars(n, optimization=1, progress_bar=False):
     stars = []
     errors = []
     polygons = []
-    #gen = CyclicPermutationsHalfAvoidingNeighbours(n, optimization=optimization)
-    gen = UniqueCyclicPermutationsHalfAvoidingNeighbours(n)
+    if optimization <= 1:
+        gen = CyclicPermutationsHalfAvoidingNeighbours(n, optimization=optimization)
+    else:
+        gen = (p.as_cyclic_permutation() for p in set(PartitionsOfMultiplesOfLength(n)))
     if progress_bar:
         import time
         start_time = time.time()
@@ -379,13 +386,13 @@ def to_file(arg,n, stdout=True):
 def main():
     import argparse
     parser = argparse.ArgumentParser('')
-    parser.add_argument("-o", "--output-dir", help="When provided info will be written to file instead of stdout")
+    parser.add_argument("-o", "--output-dir", metavar='DIR', help="When provided info will be written to file instead of stdout")
     parser.add_argument("-q", "--quiet", help="Suppress all output", action="store_const", const=True)
     parser.add_argument("-v", "--verbose", help="Place holder for debugging information", action="count")
     parser.add_argument("-p", "--progress-bar", help="!", action="store_const", const=True)
     parser.add_argument("-m", "--multiprocessing", help="After a list of permutations has been generated all cores are utilized", action="store_const", const=True)
     parser.add_argument("permutation_length", help="Length of permutations to check")
-    parser.add_argument("-0", "--no-optimization", help="Turn off generator halving", action="store_const", const=True)
+    parser.add_argument("-O", "--optimization-level", metavar='N', help="Optimization level", default='2', type=int)
 
     args = parser.parse_args()
     exit = False
@@ -411,7 +418,7 @@ def main():
 
     if not exit:
         n = int(args.permutation_length)
-        results = star_gen(n, optimization=not args.no_optimization, progress_bar=args.progress_bar)
+        results = star_gen(n, optimization=args.optimization_level, progress_bar=args.progress_bar)
         to_file(results, n, stdout=to_screen)
     else:
         parser.print_help()
