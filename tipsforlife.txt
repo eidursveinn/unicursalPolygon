@@ -58,3 +58,16 @@ reverse:    0 3 1 4 2
 0 3 1 5 2 6 4
 0 5 3 6 1 4 2
 0 5 3 6 1 4 2
+
+
+Observations:
+5 poinst inverses into itself
+6 points inverses into itself
+
+we get 3 stars with 7 points.
+and 2 non stars
+1 of the stars inverses into the other
+the third star invrses into one of the non stars
+the last non star inverses into itself
+
+with 8 points

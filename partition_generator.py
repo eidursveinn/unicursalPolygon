@@ -4,7 +4,7 @@ import sys
 def __to_standard__(part):
     n = len(part)
     def complement(lis):
-        return [n - i for i in part]
+        return [n - i for i in lis]
     res = []
     to_check = [
             part * 2,

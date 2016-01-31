@@ -243,13 +243,14 @@ def generate_stars_multiprocessing(n, optimization=True, progress_bar=False):
         else:
             other.append(a)
     return stars, other, error
-def generate_stars(n, optimization=1, progress_bar=False):
+def generate_stars(n, optimization=2, progress_bar=False):
     stars = []
     errors = []
     polygons = []
     if optimization <= 1:
         gen = CyclicPermutationsHalfAvoidingNeighbours(n, optimization=optimization)
     else:
+        print("Using partition generator")
         gen = (p.as_cyclic_permutation() for p in set(PartitionsOfMultiplesOfLength(n)))
     if progress_bar:
         import time
