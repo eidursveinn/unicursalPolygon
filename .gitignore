@@ -1,0 +1,12 @@
+# temporary editor files
+*.swp
+*.swo
+*~
+
+# python bytecode things
+*.py[cod]
+__pycache__/
+
+# bucket for other partial results
+/tmp
+
