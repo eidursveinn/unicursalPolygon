@@ -243,6 +243,7 @@ def generate_stars_multiprocessing(n, optimization=True, progress_bar=False):
         else:
             other.append(a)
     return stars, other, error
+
 def generate_stars(n, optimization=1, progress_bar=False):
     stars = []
     errors = []
@@ -360,13 +361,25 @@ def two_points_to_line(p1,p2):
     return m,c
 
 def schlafi_symbol(n,m):
+    """
+    Given the schlafi symbol for regular polygon {n/m} returns the permutation representing that polygon.
+
+    INPUT:
+
+    - ``n`` -- length of resulting permutation
+    - ``m`` -- 
+
+    OUTPUT:
+
+    A list of length n where element i is i*m (mod n)
+    """
+    assert(gcd(n,m) == 1 and 2*m < n)
     return [i*m % n for i in range(n)]
 
 def inverse_0(perm):
     tmp = [ (elem,i) for i,elem in enumerate(perm)]
     tmp.sort()
     return [b for a,b in tmp]
-
 
 def to_file(arg,n, stdout=True):
     import csv
