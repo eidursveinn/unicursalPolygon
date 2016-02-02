@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-import unicursalpolygon
+from unicursalpolygon.models.unicursalpolygon import UnicursalPolygon
+
+def inverse_0(perm):
+    tmp = [ (elem,i) for i,elem in enumerate(perm)]
+    tmp.sort()
+    return [b for a,b in tmp]
+
 def main():
     drawing = False;
     starLis = []
@@ -9,7 +15,7 @@ def main():
                 line = input()
                 lis = line.split(',')
                 lis = [int(i) for i in lis]
-                unicursalpolygon.UnicursalPolygon(lis).draw(save=True)
+                UnicursalPolygon(lis).draw(save=True)
             except EOFError:
                 break
         else:
@@ -17,8 +23,8 @@ def main():
                 line = input()
                 lis = line.split(',')
                 lis = [int(i) for i in lis]
-                a = unicursalpolygon.UnicursalPolygon(lis)
-                b = unicursalpolygon.UnicursalPolygon(unicursalpolygon.inverse_0(lis))
+                a = UnicursalPolygon(lis)
+                b = UnicursalPolygon(inverse_0(lis))
                 try:
                     tmp = a.is_star()
                     tmp2 = b.is_star()

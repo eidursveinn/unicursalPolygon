@@ -83,10 +83,6 @@ def schlafi_symbol(n,m):
     assert(gcd(n,m) == 1 and 2*m < n)
     return [i*m % n for i in range(n)]
 
-def inverse_0(perm):
-    tmp = [ (elem,i) for i,elem in enumerate(perm)]
-    tmp.sort()
-    return [b for a,b in tmp]
 
 def to_file(arg,n, stdout=True):
     import csv
