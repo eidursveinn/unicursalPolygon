@@ -20,6 +20,8 @@ non-symmetric
 nr of non-iso stars
 
 
+
+
 relation between non star and star through inverses
 
 The shortest distance between two points on a line in a star. 
@@ -32,8 +34,11 @@ DONE:
 move to python
 skrifa í skrá
 bæta við til að sýna progress
+
 add functionality for seeing pictures of lines
 minimum distance between two poitns for innacuracy
+bjuggum til partition generator
+
 
 
 
