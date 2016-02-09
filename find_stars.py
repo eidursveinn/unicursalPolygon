@@ -75,11 +75,12 @@ def to_file(arg,n, stdout=True):
         if stdout:
             print(fname, len(perm_lis))
             f = sys.stdout
-        else:
+        elif len(perm_lis) != 0:
             f = open("{fname}_{num:02d}.csv".format(num=n,fname=fname), "w")
+        else:
+            continue
         writer = csv.writer(f)
-        if len(perm_lis):
-            writer.writerows(perm_lis)
+        writer.writerows(perm_lis)
         if not stdout:
             f.close()
 
