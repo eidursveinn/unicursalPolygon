@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 from unicursalpolygon.models.unicursalpolygon import UnicursalPolygon
-
-def inverse_0(perm):
-    tmp = [ (elem,i) for i,elem in enumerate(perm)]
-    tmp.sort()
-    return [b for a,b in tmp]
+from unicursalpolygon.utils import inverse_0
 
 def main():
-    drawing = False;
+    drawing = True
     starLis = []
     while 1:
         if drawing:

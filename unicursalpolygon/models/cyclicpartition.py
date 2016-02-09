@@ -1,25 +1,8 @@
-def __to_standard__(part):
-    n = len(part)
-    def complement(lis):
-        return [n - i for i in lis]
-    res = []
-    to_check = [
-            part * 2,
-            complement(part) * 2,
-            part[::-1] * 2,
-            complement(part[::-1]) * 2
-        ]
-    for p in to_check:
-        res.extend([p[i:i+n] for i in range(n)])
-    return min(res)
-
-def perm_to_partition(perm):
-    n = len(perm)
-    return CyclicPartition([(perm[(i+1) % n]-perm[i]) % n for i in range(n)])
+from unicursalpolygon.utils import minimum_isomorphic_partition
 
 class CyclicPartition(object):
     def __init__(self, partition):
-        self.partition = __to_standard__(partition)
+        self.partition = minimum_isomorphic_partition(partition)
         self.n = len(partition)
     def __str__(self):
         return str(self.partition)

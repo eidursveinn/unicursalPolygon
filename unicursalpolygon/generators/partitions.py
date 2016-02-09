@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from ..models.cyclicpartition import CyclicPartition
+from unicursalpolygon.models.cyclicpartition import CyclicPartition
 
 class PartitionsOfMultiplesOfLength(object):
     def __init__(self, n):

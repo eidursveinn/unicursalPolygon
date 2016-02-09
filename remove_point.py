@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 from unicursalpolygon.models.unicursalpolygon import UnicursalPolygon
-
-def standardize(lis):
-    tmp = [(val,i) for i,val in enumerate(lis)]
-    tmp = [(b[1],i) for i,b in enumerate(sorted(tmp))]
-    tmp.sort()
-    res = [val for _,val in tmp]
-    return res
+from unicursalpolygon.utils import permutation_to_standard_0
 
 if __name__ == "__main__":
     while 1:
@@ -16,13 +10,13 @@ if __name__ == "__main__":
             for i in range(len(lis)):
                 tmp = list(lis)
                 x = tmp.pop(i)
-                to_check = standardize(tmp)
+                to_check = permutation_to_standard_0(tmp)
                 tmp = UnicursalPolygon(to_check)
                 try:
                     res[tmp.is_star()].append(x)
                 except:
                     res[None].append(x)
-            print(lis,res[True])
+            print(lis,res[False],res[True])
         except EOFError:
             break
 

@@ -3,12 +3,7 @@ from unicursalpolygon.models.point import Point
 from unicursalpolygon.models.boundarypoint import OuterBoundaryPoint
 from unicursalpolygon.models.line import Line
 from sympy import pi
-
-# temporary wrapper allowing for N(None) to be None instead of zero
-def N(number):
-    if number is None:
-        return None
-    return float(number)
+from unicursalpolygon.utils import N
 
 class UnicursalPolygon(object):
     def __init__(self, perm, jumps=False):

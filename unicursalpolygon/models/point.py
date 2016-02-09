@@ -1,4 +1,5 @@
 from sympy import *
+from unicursalpolygon.utils import polar_to_cartesian, cartesian_to_polar
 #from unicursalpolygon.models.unicursalpolygon import N
 
 class Point(object):
@@ -83,55 +84,3 @@ class Point(object):
         """
         return lambda P: P.theta - self.theta + 2*pi if P.theta < self.theta else P.theta - self.theta
 
-
-
-def polar_to_cartesian(theta,r,accurate=False):
-    """
-    Converts polar coordinates to cartesian coordinates.
-
-    INPUT:
-
-    - ``theta`` -- Angle in radians
-
-    - ``r`` -- Distance from origin
-
-    OUTPUT:
-
-    Cartesian coordinates (x,y) equivalent to the given polar coordinates
-    """
-    if accurate:
-        x = r*cos(theta)
-        y = r*sin(theta)
-    else:
-        x = N(r*cos(theta))
-        y = N(r*sin(theta))
-    return x,y
-
-def cartesian_to_polar(x,y, accurate=False):
-    """
-    Converts cartesian coordinates to polar coordinates.
-
-    INPUT:
-
-    - ``x`` -- Distance from origin on horizontal axis
-
-    - ``y`` -- Distance from origin on vertical axis
-
-    OUTPUT:
-
-    Polar coordinates (angle,distance) equivalent
-    to the given cartesian coordinates.
-
-    Angle will be in radians on the range [0, 2*pi[
-    and radius will be non-negative.
-    Furthermore the cartesian origin (0,0) will return (0,0)
-    even though (angle,0) for any angle would be equivalent.
-    """
-    # origin
-    if x == 0 and y == 0:
-        return 0,0
-    r = sqrt(x**2 + y**2)
-    theta = atan2(y,x)
-    while theta < 0:
-        theta += 2*pi
-    return (theta, r) if accurate else (N(theta), N(r))

@@ -67,22 +67,6 @@ def draw_stars(lis):
     for star in lis:
         UnicursalPolygon(star).draw()
 
-def schlafi_symbol(n,m):
-    """
-    Given the schlafi symbol for regular polygon {n/m} returns the permutation representing that polygon.
-
-    INPUT:
-
-    - ``n`` -- length of resulting permutation
-    - ``m`` -- 
-
-    OUTPUT:
-
-    A list of length n where element i is i*m (mod n)
-    """
-    assert(gcd(n,m) == 1 and 2*m < n)
-    return [i*m % n for i in range(n)]
-
 
 def to_file(arg,n, stdout=True):
     import csv
