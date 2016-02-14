@@ -43,6 +43,24 @@ class UnicursalPolygon(object):
                     continue
                 lis.append(other)
             line.assign_innerpoints(lis)
+
+    def generate_isomorphs(self):
+        permSet = set()
+        fun = lambda x: [(len(x)-i)%len(x) for i in x]
+        for i in range(len(self.perm)):
+            currPerm = self.perm[i:] + self.perm[:i]
+            for j in range(len(self.perm)):
+                curr = tuple([(curr+j) % len(self.perm) for curr in currPerm])
+                permSet.add(curr)
+                permSet.add(curr[::-1])
+        for i in range(len(self.perm)):
+            currPerm = fun(self.perm)[i:]+fun(self.perm)[:i]
+            for j in range(len(self.perm)):
+                curr = tuple([(curr+j) % len(self.perm) for curr in currPerm])
+                permSet.add(curr)
+                permSet.add(curr[::-1])
+        return permSet
+
     def points(self):
         res = []
         for p in self.boundary_points:
