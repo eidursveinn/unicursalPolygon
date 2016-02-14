@@ -5,6 +5,7 @@ def N(number):
     return float(number)
 
 def polar_to_cartesian(theta,r,accurate=False):
+    from sympy import sin, cos
     """
     Converts polar coordinates to cartesian coordinates.
 
@@ -27,6 +28,7 @@ def polar_to_cartesian(theta,r,accurate=False):
     return x,y
 
 def cartesian_to_polar(x,y, accurate=False):
+    from sympy import atan2, pi, sqrt
     """
     Converts cartesian coordinates to polar coordinates.
 
