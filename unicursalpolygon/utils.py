@@ -106,3 +106,6 @@ def permutation_to_standard_0(lis):
     tmp.sort()
     res = [val for _,val in tmp]
     return res
+
+def permutation_to_oneline(x):
+    return [x[(x.index(i) + 1) % len(x)] for i in range(len(x))]

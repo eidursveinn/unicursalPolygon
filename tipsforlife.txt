@@ -1,3 +1,9 @@
+get rid of tries
+
+function to cycle notation
+fun = lambda x: [x[(x.index(i) + 1) % len(x)] for i in range(len(x))]
+
+
 TODO:
 bisc
 check the inverse symmetry
@@ -20,6 +26,9 @@ non-symmetric
 nr of non-iso stars
 
 
+cyclic one line notation, throw it in bisc
+
+look at length nine, where shading goes
 
 
 relation between non star and star through inverses
