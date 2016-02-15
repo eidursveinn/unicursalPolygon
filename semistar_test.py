@@ -24,6 +24,7 @@ def test_semistar_property(perm):
     neigh = [{perm[(i-1) % n], perm[(i+1) % n]} for i in range(n)]
     return all(semistar_property(i, perm, inv, neigh, n) for i in range(n))
 
+
 def star_property(k, perm, inv, neigh, n):
     i = inv[k]
     j = inv[(k+1)%n]
@@ -37,6 +38,8 @@ def star_property(k, perm, inv, neigh, n):
 
 def triple_intersection(n,p,q,r):
     from sympy import acos,sin,cos,pi,sqrt,simplify
+    def simplify(a):
+        return a
     def sub(v1,v2):
         return simplify(v1[0]-v2[0]), simplify(v1[1]-v2[1])
     def add(v1,v2):
@@ -49,16 +52,38 @@ def triple_intersection(n,p,q,r):
         return simplify(sqrt(v[0]**2 + v[1]**2))
     magnitude = simplify(sin((n-p)*pi/n) * 2 * sin(2*pi/n/2) / sin((p-q+1) * pi/n))
     unit_v = (simplify(-sin(q * pi / n)), simplify(cos(q * pi /n)))
-    print(unit_v)
+    #print(1,unit_v)
     intersection = add((1,0),scale(magnitude,unit_v))
-    print(intersection[0], intersection[1])
+    #print(2,intersection[0], intersection[1])
     c0 = sub((1,0),intersection)
-    print(c0[0], c0[1])
+    #print(3,c0[0], c0[1])
     cr = sub((cos(r*2*pi/n), sin(r*2*pi/n)), intersection)
-    print(cr[0], cr[1])
+    #print(4,cr[0], cr[1])
     angle = simplify(acos(dot(c0,cr)/(length(c0)*length(cr))))
-    print(angle)
+    #print(5,angle)
     return simplify(n - r + q - angle*n/pi)
+
+def test_star_property(orig):
+    n = len(orig)
+    for i in range(n):
+        val = lambda x : (x - i) % n
+        perm = [val(x) for x in orig]
+        neigh = [{perm[(i-1) % n], perm[(i+1) % n]} for i in range(n)]
+        inv = inverse_0(perm)
+        q = min(neigh[inv[0]])
+        p = max(neigh[inv[1]])
+        if not p > q:
+            #print(i, "semistar")
+            return False
+        for r in range(p+1, n):
+            sprime = float(triple_intersection(n,p,q,r))
+            s_set = neigh[inv[r]]
+            if not all(s >= sprime for s in s_set if s > 1):
+                #print(i, "star", p,q,r,s_set,float(sprime))
+                return False
+    return True
+
+
 
 if __name__ == "__main__":
     while 1:
@@ -66,7 +91,7 @@ if __name__ == "__main__":
             perm = get_csv_line()
         except:
             break
-        if test_semistar_property(perm):
+        if test_star_property(perm):
             print("yes", perm)
         else:
             print("no", perm)
