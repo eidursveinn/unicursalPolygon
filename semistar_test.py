@@ -78,7 +78,7 @@ def test_star_property(orig):
         for r in range(p+1, n):
             sprime = float(triple_intersection(n,p,q,r))
             s_set = neigh[inv[r]]
-            if not all(s >= sprime for s in s_set if s > 1):
+            if any(s < sprime and s > 1 for s in s_set):
                 #print(i, "star", p,q,r,s_set,float(sprime))
                 return False
     return True
