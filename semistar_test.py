@@ -24,6 +24,7 @@ def test_semistar_property(perm):
     neigh = [{perm[(i-1) % n], perm[(i+1) % n]} for i in range(n)]
     return all(semistar_property(i, perm, inv, neigh, n) for i in range(n))
 
+
 def triple_intersection(n,p,q,r):
     #assert(n > r)
     #assert(r > p)
@@ -111,13 +112,59 @@ def embeddingless_star(orig):
                 return False
     return res
 
+def get_significant_adjacent_points(O, perm, inv, neigh, n, val):
+    I = (O+1) % n
+    q = min(neigh[inv[O]], key=val)
+    p = max(neigh[inv[I]], key=val)
+    return p,q
+
+def meddling_middlepoint(perm):
+    n = len(perm)
+    inv = inverse_0(perm)
+    neigh = [{perm[(i-1) % n], perm[(i+1) % n]} for i in range(n)]
+    for O in range(n):
+        val = lambda x : (x - O) % n
+        p,q = get_significant_adjacent_points(O,perm,inv,neigh,n,val)
+        if val(p) - val(q) == 1:
+            val = lambda x : (x - q) % n
+            pp,qq = get_significant_adjacent_points(q,perm,inv,neigh,n,val)
+            if (qq,pp) == (O, (O+1)%n):
+                return True
+    return False
+
+    
+
+def nova_badness(orig):
+    res = []
+    n = len(orig)
+    for i in range(n):
+        val = lambda x : (x - i) % n
+        invval = lambda x : (x + i) % n
+        perm = [val(x) for x in orig]
+        neigh = [{perm[(i-1) % n], perm[(i+1) % n]} for i in range(n)]
+        inv = inverse_0(perm)
+        q = min(neigh[inv[0]])
+        p = max(neigh[inv[1]])
+        if not p > q:
+            #print(i, "semistar")
+            return -1 # not a semistar
+        if n-p-1 > 0 and q-2 > 0:
+            pass
+        tmp = 0
+        for r in range(p+1, n):
+            lis = [s for s in neigh[inv[r]] if 1 < s and s < q]
+            tmp += len(lis)
+        res.append(tmp)
+    return sum(res),res
+
 from enum import IntEnum
 class Star(IntEnum):
     nothing = 0
     neighbour_avoidance = 1
-    semistar = 2
-    star = 3
-    nova = 4
+    semistar_middlepoint = 2
+    semistar = 3
+    star = 4
+    nova = 5
 
 def avoid_neigh(perm):
     n = len(perm)
@@ -136,12 +183,28 @@ def classify_permutation(perm):
     else:
         return Star.semistar
 
+def classify2_permutation(perm):
+    from unicursalpolygon.models.unicursalpolygon import UnicursalPolygon
+    if not avoid_neigh(perm):
+        return Star.nothing
+    elif not test_semistar_property(perm):
+        return Star.neighbour_avoidance
+    badness,lis = nova_badness(perm)
+    if badness == 0:
+        return Star.nova
+    elif meddling_middlepoint(perm):
+        return Star.semistar_middlepoint, badness, lis
+    elif UnicursalPolygon(perm).is_star():
+        return Star.star, badness, lis
+    else:
+        return Star.semistar, badness, lis
+
 if __name__ == "__main__":
     while 1:
         try:
             perm = get_csv_line()
         except:
             break
-        starclass = classify_permutation(perm)
+        starclass = classify2_permutation(perm)
         s = ",".join(str(p) for p in perm)
-        print(starclass, s)
+        print(s, starclass)
