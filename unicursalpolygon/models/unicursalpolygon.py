@@ -62,6 +62,18 @@ class UnicursalPolygon(object):
         return permSet
 
     def points(self):
+        from sympy import atan2
+        res = []
+        for p in self.boundary_points:
+            x,y = p.point.x, p.point.y
+            rotation = atan2(p.next_inner.y - y, p.next_inner.x - x)
+            angle = atan2(p.prev_inner.y - y, p.prev_inner.x - x) - rotation
+            while angle < 0:
+                angle += 2*pi
+            if angle >= pi:
+                p.prev_inner, p.next_inner = p.next_inner, p.prev_inner
+
+    def points2(self):
         res = []
         for p in self.boundary_points:
             key = p.prev_inner.slope_order()
@@ -78,7 +90,7 @@ class UnicursalPolygon(object):
         #boundary_points = copy.deepcopy(self.boundary_points)
         for i in range(self.n-1):
             if not self.boundary_points[i].next_inner.equals(self.boundary_points[i+1].prev_inner, n=self.n):
-                #print("error in point nr:",i, self.boundary_points[i].next_inner.cartesian(), self.boundary_points[i+1].prev_inner.cartesian())
+#                print("error in point nr:",i, self.boundary_points[i].next_inner.cartesian(), self.boundary_points[i+1].prev_inner.cartesian())
                 return False
         # special case for last and first point
         if not self.boundary_points[self.n-1].next_inner.equals(self.boundary_points[0].prev_inner, n=self.n):
